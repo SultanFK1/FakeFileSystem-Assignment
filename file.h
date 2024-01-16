@@ -1,16 +1,21 @@
 #pragma once
 #include <string>
-using namespace std; 
+#include <filesystem>
+#include <iostream>
+
+using namespace std;
+namespace fs = filesystem;
 
 class file
 {
 private:
-	int filesize;
-	int timestamp;
-protected:
-	string filename;
+    int filesize_;
+    int timestamp_;
+    string filename_;
+
 public:
-	int generateFileSize(string filename);
+    file(string filename) : filename_(filename), filesize_(generateFileSize(filename)), timestamp_(generateFileSize(filename)) {};
+    int generateFileSize(string& filename);
 
+    friend ostream& operator<<(ostream& os, const file& rhs);
 };
-

@@ -24,6 +24,12 @@
     <ClCompile Include="directory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FakeFileSytem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SystemEntity.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="file.h">

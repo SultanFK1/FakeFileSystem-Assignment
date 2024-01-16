@@ -64,25 +64,32 @@ int main()
             cout << " size: " << filesize;
             cout << "\n";
 
-
         }
+
     }
-    vector<file> files;
     string input;
-    do {        
+    do {
+
 
         cin >> input;
-    
+
     } while (input != "exit");
+
+    file TestFile = file("FILE");
+    cout << TestFile;
+
 
 
     return 0;
 }
 
+
 // we need to do a little conversion between what the filesystem returns for time stamps and something usable
 // just use this function and don't worry about how it works
+
 const tm convertTime(const filesystem::file_time_type& timestamp)
 {
+
   using namespace chrono;  // just for this function, use chrono to save us prefixing chrono:: everywhere
   system_clock::time_point delta=time_point_cast<system_clock::duration>(timestamp-filesystem::file_time_type::clock::now()+system_clock::now());
   time_t conversion=system_clock::to_time_t(delta);
@@ -90,4 +97,5 @@ const tm convertTime(const filesystem::file_time_type& timestamp)
   tm result;
   localtime_s(&result, &conversion);
   return result;
+
 }
