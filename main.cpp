@@ -8,10 +8,14 @@
 #include <iostream>
 #include <chrono>
 #include <filesystem>  // file system needs cpp standard 17 or above.  This is enabled in this project, but if you recreated from scratch, set -std=c++17 flags
+#include "FakeFileSystem.h"
+#include "FileEntity.h"
+#include"file.h"
+#include"directory.h"
 
-#include "file.h"
-#include "directory.h"
-
+#include <memory>
+#include<string.h>
+#include <ctime>
 
 using namespace std;
 
@@ -21,7 +25,7 @@ const tm convertTime(const filesystem::file_time_type& timestamp);
 // C++ entry point
 int main()
 {
-
+    FileManager FileManager; 
 #ifdef _DEBUG
     // make sure we are checking for memory leaks when the application ends, but only in the _DEBUG variant
     _onexit(_CrtDumpMemoryLeaks);
@@ -32,9 +36,12 @@ int main()
 
     cout << "Here is a list of files in " << path << "\n\n";
 
+
     // use an implicit iterator to enumerate the path
     for (const filesystem::directory_entry& item : filesystem::directory_iterator(path))
     {
+        tm timestamp = convertTime(item.last_write_time());
+        string name = item.path().filename().string(); // Convert to std::string
         if (item.is_directory()) // check if this is a directory
         {
             // get and display the name of the current item
@@ -42,14 +49,10 @@ int main()
             cout << "A directory called " << name;
 
             // get the timestamp into a format that allows us to manage it
+
             tm timestamp = convertTime(item.last_write_time());
-            cout << " timestamp: ";
-            cout << "Year: " << (timestamp.tm_year + 1900); // tm_year start at 0 for 1900 so add 1900
-            cout << " Month: " << (timestamp.tm_mon + 1); // tm_mon starts at 0 for January so add 1
-            cout << " Day: " << timestamp.tm_mday;
-            cout << " Hour: " << timestamp.tm_hour;
-            cout << " Min: " << timestamp.tm_min;
-            cout << "\n";
+
+
         }
         else
         {
@@ -57,27 +60,30 @@ int main()
             string tmp = item.path().filename().string();
             const char* name = tmp.c_str();
 
-            cout << "A file called " << name;
 
             // get the size of the file - __int64 is just an integer value, but using 64 bits to store it (8 bytes)
             __int64 filesize = item.file_size();
-            cout << " size: " << filesize;
-            cout << "\n";
+
+
+
+            tm timestamp = convertTime(item.last_write_time());
+
+
 
         }
 
     }
-    string input;
+
+
+
+
+     string input;
     do {
 
 
         cin >> input;
 
     } while (input != "exit");
-
-    file TestFile = file("FILE");
-    cout << TestFile;
-
 
 
     return 0;

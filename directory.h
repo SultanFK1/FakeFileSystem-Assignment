@@ -1,21 +1,46 @@
 #pragma once
-#include "file.h"
-#include <string>
 #include <vector>
+#include <iostream>
+#include "FileEntity.h"
 
-using namespace std;
 
-class directory
-{
+
+class Directory : public FileEntity {
+
 private:
-
-	string directoryName; //
-	vector <file> files; // vector of files
-	vector <directory> directories; // vector of directories
-
+    std::vector<FileEntity*> contents;
 
 public:
-	directory(string directoryName, vector<file> files, vector<directory> directories) : directoryName(directoryName), directories(directories), files(files) {}
+    Directory(const std::string& name, const tm& timestamp)
+        : FileEntity(name, timestamp) {}
+
+    Directory(const std::string& name)
+        : FileEntity(name) {}
+
+    ~Directory() {
+        for (auto& entity : contents) {
+            delete entity;
+        }
+    }
+
+    void addFileEntity(FileEntity* entity) {
+        contents.push_back(entity);
+    }
+
+
+    int generateEntitySize() const override {
+        int totalSize = 0;
+        for (const auto& entity : contents) {
+            totalSize += entity->generateEntitySize();
+        }
+        return totalSize;
+    }
+
+    void displayDetails() const override {
+        std::cout << "Directory: " << getName() << " (Total Size: " << generateEntitySize() << ")\n";
+        for (const auto& entity : contents) {
+            entity->displayDetails();
+        }
+    }
 
 };
-

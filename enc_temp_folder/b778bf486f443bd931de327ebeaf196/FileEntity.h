@@ -20,5 +20,5 @@ public:
     const tm& getTimestamp() const { return timestamp_; }
 
     virtual void displayDetails() const = 0;
-    virtual int generateEntitySize() const = 0; 
+    virtual int generateEntitySize() const = 0;  // Virtual method for entity size
 };

@@ -1,21 +1,28 @@
 #pragma once
-#include <string>
-#include <filesystem>
+#include "FileEntity.h"
 #include <iostream>
+#include <cstdlib>
 
-using namespace std;
-namespace fs = filesystem;
-
-class file
-{
+class File : public FileEntity {
 private:
-    int filesize_;
-    int timestamp_;
-    string filename_;
+    int entitySize_;
 
 public:
-    file(string filename) : filename_(filename), filesize_(generateFileSize(filename)), timestamp_(generateFileSize(filename)) {};
-    int generateFileSize(string& filename);
+    File(const std::string& filename, int size, const tm& timestamp)
+        : FileEntity(filename, timestamp), entitySize_(size) {}
 
-    friend ostream& operator<<(ostream& os, const file& rhs);
+    File(const std::string& filename)
+        : FileEntity(filename), entitySize_(generateEntitySize()) {}
+
+    int generateEntitySize() const override {
+        // Random number generation
+        return std::rand() + 1; // Random positive number
+    }
+
+    void displayDetails() const override {
+        std::cout << "File: " << getName() << " Size: " << entitySize_
+            << " Timestamp: Year: " << getTimestamp().tm_year + 1900
+            << " Month: " << getTimestamp().tm_mon + 1
+            << " Day: " << getTimestamp().tm_mday << std::endl;
+    }
 };
