@@ -22,73 +22,66 @@ using namespace std;
 // function prototype of a helper method to convert timestamps
 const tm convertTime(const filesystem::file_time_type& timestamp);
 
-// C++ entry point
-int main()
-{
-    FileManager FileManager; 
-#ifdef _DEBUG
-    // make sure we are checking for memory leaks when the application ends, but only in the _DEBUG variant
-    _onexit(_CrtDumpMemoryLeaks);
-#endif
 
-    // root path to enumerate
-    const char* path = "."; // this is just the local path, so the project folder
-
-    cout << "Here is a list of files in " << path << "\n\n";
-
-
-    // use an implicit iterator to enumerate the path
-    for (const filesystem::directory_entry& item : filesystem::directory_iterator(path))
-    {
+void initializeFileSystem(const std::string& path, Directory* currentDir) {
+    for (const auto& item : filesystem::directory_iterator(path)) {
         tm timestamp = convertTime(item.last_write_time());
-        string name = item.path().filename().string(); // Convert to std::string
-        if (item.is_directory()) // check if this is a directory
-        {
-            // get and display the name of the current item
-            string name = item.path().filename().string();
-            cout << "A directory called " << name;
+        string name = item.path().filename().string();
 
-            // get the timestamp into a format that allows us to manage it
-
-            tm timestamp = convertTime(item.last_write_time());
-
-
+        if (item.is_directory()) {
+            Directory* newDir = FileManager::createDirectory(name, timestamp, currentDir);
+            initializeFileSystem(item.path().string(), newDir); // Recursive call for subdirectories
         }
-        else
-        {
-            // another way to get at the data held in the filename as a c-string (array of characters)
-            string tmp = item.path().filename().string();
-            const char* name = tmp.c_str();
-
-
-            // get the size of the file - __int64 is just an integer value, but using 64 bits to store it (8 bytes)
+        else {
             __int64 filesize = item.file_size();
-
-
-
-            tm timestamp = convertTime(item.last_write_time());
-
-
-
+            FileManager::createFile(name, static_cast<int>(filesize), currentDir);
         }
-
     }
-
-
-
-
-     string input;
-    do {
-
-
-        cin >> input;
-
-    } while (input != "exit");
-
-
-    return 0;
 }
 
+
+// C++ entry point
+int main() {
+
+    const char* path = "C:\\Users\\s\\Desktop\\FakeFileSystem - C2026900\\TestEnvironment";
+    Directory* rootDirectory = new Directory("Root", {});
+    initializeFileSystem(path, rootDirectory); // Initialize file system starting from root
+    cout << "Initialisation complete..." << endl;
+
+
+
+    cout << "Here is a list of files in: " << path << "\n\n";
+
+    for (const filesystem::directory_entry& item : filesystem::directory_iterator(path)) {
+        tm timestamp = convertTime(item.last_write_time());
+        string name = item.path().filename().string();
+
+       if (item.is_directory()) {
+          FileManager::createDirectory(name, timestamp, rootDirectory); // Logic to determine parentDir may be needed
+          }
+       else{
+         __int64 filesize = item.file_size();
+                FileManager::createFile(name, static_cast<int>(filesize), rootDirectory );
+          }
+       }
+
+        // Assuming you want to create a File. If you want a Directory, use Directory class instead.
+        string name1 = "Sos";
+        string name2 = "SOs";
+        File* testFile = new File(name1);// Replace with Directory if you want a directory instead. 
+        Directory* testFile1 = new Directory(name2);
+        rootDirectory->addFileEntity(testFile);
+        rootDirectory->addFileEntity(testFile1);
+        FileManager::listFilesAndDirectories(rootDirectory);
+        
+        string input;
+        do {
+            cin >> input;
+        } while (input != "exit");
+
+        delete rootDirectory;
+        return 0;
+    }
 
 // we need to do a little conversion between what the filesystem returns for time stamps and something usable
 // just use this function and don't worry about how it works

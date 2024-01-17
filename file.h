@@ -8,9 +8,11 @@ private:
     int entitySize_;
 
 public:
-    File(const std::string& filename, int size, const tm& timestamp)
-        : FileEntity(filename, timestamp), entitySize_(size) {}
+    //Constructor for parsing the initial entities into root directory. 
+    File(const std::string& filename, int size)
+        : FileEntity(filename), entitySize_(size) {}
 
+    //Constructor when adding a new file
     File(const std::string& filename)
         : FileEntity(filename), entitySize_(generateEntitySize()) {}
 
@@ -19,10 +21,11 @@ public:
         return std::rand() + 1; // Random positive number
     }
 
-    void displayDetails() const override {
-        std::cout << "File: " << getName() << " Size: " << entitySize_
-            << " Timestamp: Year: " << getTimestamp().tm_year + 1900
-            << " Month: " << getTimestamp().tm_mon + 1
-            << " Day: " << getTimestamp().tm_mday << std::endl;
+    void displayDetails() const override 
+    {
+        std::cout << "\t\t " << getName() <<  " \t" << entitySize_ << " bytes\t" << "\t";
+        std::cout << std::endl;
+    
     }
+
 };
