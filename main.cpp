@@ -8,7 +8,7 @@
 #include <iostream>
 #include <chrono>
 #include <filesystem>  // file system needs cpp standard 17 or above.  This is enabled in this project, but if you recreated from scratch, set -std=c++17 flags
-#include "FakeFileSystem.h"
+#include "FileManager.h"
 #include "FileEntity.h"
 #include"file.h"
 #include"directory.h"
@@ -16,6 +16,9 @@
 #include <memory>
 #include<string.h>
 #include <ctime>
+#include <unordered_map>
+#include <functional>
+#include <sstream>
 
 using namespace std;
 
@@ -29,59 +32,84 @@ void initializeFileSystem(const std::string& path, Directory* currentDir) {
         string name = item.path().filename().string();
 
         if (item.is_directory()) {
-            Directory* newDir = FileManager::createDirectory(name, timestamp, currentDir);
+            Directory* newDir = FileManager::parseDirectory(name, timestamp, currentDir);
             initializeFileSystem(item.path().string(), newDir); // Recursive call for subdirectories
         }
         else {
             __int64 filesize = item.file_size();
-            FileManager::createFile(name, static_cast<int>(filesize), currentDir);
+            FileManager::ParseFile(name, static_cast<int>(filesize), currentDir);
         }
     }
+    cout << "Initializing..." << endl;
 }
 
 
-// C++ entry point
+
 int main() {
 
+
+#ifdef _DEBUG
+    // make sure we are checking for memory leaks when the application ends, but only in the _DEBUG variant
+    _onexit(_CrtDumpMemoryLeaks);
+#endif
+    std::srand(static_cast<unsigned int>(std::time(0)));
     const char* path = "C:\\Users\\s\\Desktop\\FakeFileSystem - C2026900\\TestEnvironment";
     Directory* rootDirectory = new Directory("Root", {});
+    FileManager::setCurrentDirectory(rootDirectory); // Set current directory to root at the start
     initializeFileSystem(path, rootDirectory); // Initialize file system starting from root
-    cout << "Initialisation complete..." << endl;
+    cout << "Complete..." << endl;
 
 
 
-    cout << "Here is a list of files in: " << path << "\n\n";
+    unordered_map<string, function<void()>> noArgCommands = {
+          {"dir", []() { FileManager::dirCommand(); }}
+    };
 
-    for (const filesystem::directory_entry& item : filesystem::directory_iterator(path)) {
-        tm timestamp = convertTime(item.last_write_time());
-        string name = item.path().filename().string();
+    unordered_map<string, function<void(const string&)>> singleArgCommands = {
+        {"mkfile", [](const string& arg) { FileManager::GenerateFile(arg, FileManager::getCurrentDirectory()); }},
+        {"mkdir", [](const string& arg) { FileManager::GenerateDirectory(arg, FileManager::getCurrentDirectory()); }},
+        {"cd", [](const string& arg) { FileManager::changeDirectory(arg); }},
+        {"del", [](const string& arg) { FileManager::deleteEntity(arg); }}
+    };
 
-       if (item.is_directory()) {
-          FileManager::createDirectory(name, timestamp, rootDirectory); // Logic to determine parentDir may be needed
-          }
-       else{
-         __int64 filesize = item.file_size();
-                FileManager::createFile(name, static_cast<int>(filesize), rootDirectory );
-          }
-       }
+    unordered_map<string, function<void()>> sortCommands = {
+        {"sortsize", []() { FileManager::sortSizeCommand(FileManager::getCurrentDirectory()); }},
+        {"sortname", []() { FileManager::sortNameCommand(FileManager::getCurrentDirectory()); }}
+    };
 
-        // Assuming you want to create a File. If you want a Directory, use Directory class instead.
-        string name1 = "Sos";
-        string name2 = "SOs";
-        File* testFile = new File(name1);// Replace with Directory if you want a directory instead. 
-        Directory* testFile1 = new Directory(name2);
-        rootDirectory->addFileEntity(testFile);
-        rootDirectory->addFileEntity(testFile1);
-        FileManager::listFilesAndDirectories(rootDirectory);
-        
-        string input;
-        do {
-            cin >> input;
-        } while (input != "exit");
 
-        delete rootDirectory;
-        return 0;
-    }
+    // Two argument commands (example: {"command", [](const string& arg1, const string& arg2) { ... }})
+    unordered_map<string, function<void(const string&, const string&)>> twoArgCommands{}; 
+    // Add two-argument commands if needed
+
+    string input, command, arg1, arg2;
+    do {
+        FileManager::getCurrentDirectory()->displayPath();
+        cout << "> ";
+
+        getline(cin, input);
+        stringstream ss(input);
+        ss >> command >> arg1 >> arg2;
+
+        if (noArgCommands.find(command) != noArgCommands.end()) {
+            noArgCommands[command]();
+        }
+        else if (singleArgCommands.find(command) != singleArgCommands.end()) {
+            singleArgCommands[command](arg1);
+        }
+        else if (sortCommands.find(command) != sortCommands.end()) {
+            sortCommands[command]();
+        }
+        else if (twoArgCommands.find(command) != twoArgCommands.end()) {
+            twoArgCommands[command](arg1, arg2);
+        }
+
+    } while (command != "exit");
+
+
+    return 0;
+}
+
 
 // we need to do a little conversion between what the filesystem returns for time stamps and something usable
 // just use this function and don't worry about how it works

@@ -130,14 +130,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="directory.cpp" />
-    <ClCompile Include="FakeFileSystem.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="file.cpp" />
-    <ClCompile Include="FileEntity.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="directory.h" />
-    <ClInclude Include="FakeFileSystem.h" />
+    <ClInclude Include="FileManager.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="FileEntity.h" />
   </ItemGroup>

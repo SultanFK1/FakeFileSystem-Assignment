@@ -2,63 +2,57 @@
 #include <vector>
 #include <iostream>
 #include "FileEntity.h"
-
-
+#include <algorithm>
 
 class Directory : public FileEntity {
 private:
-    std::vector<FileEntity*> contents;
-    Directory* parent; // Pointer to the parent directory
-    tm timestamp_;
+    std::vector<FileEntity*> contents;  // Contents of the directory (files and subdirectories)
+    Directory* parent; 
+    tm timestamp_; 
 
 public:
-
+    // Constructor for parsed files with a specified timestamp
     Directory(const std::string& name, const tm& timestamp, Directory* parentDir = nullptr)
         : FileEntity(name, timestamp), parent(parentDir), timestamp_(timestamp) {}
 
+    // Constructor for generated files with a generated timestamp
     Directory(const std::string& name, Directory* parentDir = nullptr)
-        : FileEntity(name, {}), parent(parentDir), timestamp_({}) {}
+        : FileEntity(name, {}), parent(parentDir), timestamp_(generateTimestamp()) {}
 
+    // Destructor to clean up dynamically allocated memory
     ~Directory() {
         for (auto& entity : contents) {
             delete entity;
         }
     }
 
-    void addFileEntity(FileEntity* entity) {
-        contents.push_back(entity);
-        if (Directory* dir = dynamic_cast<Directory*>(entity)) {
-            dir->parent = this; // Set this directory as the parent of the added directory
-        }
-    }
 
-    int generateEntitySize() const override {
-        int totalSize = 0;
-        for (const auto& entity : contents) {
-            totalSize += entity->generateEntitySize();
-        }
-        return totalSize;
-    }
-
-    void displayTimestamp() const
-    {
-        std::cout << timestamp_.tm_year + 1900 << "-"
-            << timestamp_.tm_mon + 1 << "-"
-            << timestamp_.tm_mday << " " << timestamp_.tm_hour << " : " << timestamp_.tm_hour;
-
-    }
-
-    void displayDetails() const override {
-        std::cout << "<DIR>\t" << getName() << "\t" << "Total Size: " << generateEntitySize() << "\t";
-
-        displayTimestamp();
-        std::cout << std::endl;
-        
-        for (const auto& entity : contents) {
-            entity->displayDetails();
-        }
-    }
+    std::vector<FileEntity*>& getContents();
 
 
+    Directory* getParent() const;
 
+    // Static method to generate a timestamp for a directory
+     static tm generateTimestamp();
+
+    // Method to add a file entity (file or subdirectory) to the directory
+    void addFileEntity(FileEntity* entity);
+
+    // Override of the base class method to calculate the size of the directory
+     int generateEntitySize() const override;
+
+    // Method to display the timestamp of the directory
+     void displayTimestamp() const;
+
+    // Override of the base class method to display details of the directory
+    void displayDetails() const override;
+
+    // Method to sort the contents of the directory by size
+    void sortsize();
+
+    // Method to sort the contents of the directory by name
+    void sortname();
+
+
+    void displayPath() const;
 };

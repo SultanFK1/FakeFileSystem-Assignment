@@ -9,23 +9,17 @@ private:
 
 public:
     //Constructor for parsing the initial entities into root directory. 
-    File(const std::string& filename, int size)
+     File(const std::string& filename, int size)
         : FileEntity(filename), entitySize_(size) {}
 
-    //Constructor when adding a new file
+    //Constructor when generating a new file
     File(const std::string& filename)
-        : FileEntity(filename), entitySize_(generateEntitySize()) {}
+        : FileEntity(filename), entitySize_(generateFileSize()) {}
 
-    int generateEntitySize() const override {
-        // Random number generation
-        return std::rand() + 1; // Random positive number
-    }
+    int generateFileSize();
 
-    void displayDetails() const override 
-    {
-        std::cout << "\t\t " << getName() <<  " \t" << entitySize_ << " bytes\t" << "\t";
-        std::cout << std::endl;
-    
-    }
+    int generateEntitySize() const override;
+
+    void displayDetails() const override;
 
 };

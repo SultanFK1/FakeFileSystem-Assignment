@@ -24,10 +24,7 @@
     <ClCompile Include="directory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FakeFileSytem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SystemEntity.cpp">
+    <ClCompile Include="FileManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,6 +33,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="directory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
