@@ -40,7 +40,7 @@ void initializeFileSystem(const std::string& path, Directory* currentDir) {
             FileManager::ParseFile(name, static_cast<int>(filesize), currentDir);
         }
     }
-    cout << "Initializing..." << endl;
+    cout << "Initializing.." << endl;
 }
 
 
