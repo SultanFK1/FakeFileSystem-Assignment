@@ -1,37 +1,55 @@
-# FakeFileSystem - C2026900
+# Virtual File System - C++
 
-Fake file system in dynamic/heap memory that the user can interact with via console inputs (i.e. no GUI).  A Visual Studio 2022 starting project has been provided with some basic code that allows you to enumerate your real file system and extract all relevant information.  The commands you interact with should only modify your in-memory representation of that file system and it must not make changes back to the real file system (i.e. if you ask your application to remove a file, it only removes the the objects you are using to represent that file in your application’s dynamic memory and not a real file on disk).
-Interact with your fake file system (FFS) via a Windows-style command prompt (cmd.exe).  An example of the application running is demonstrated below:
+## Description  
+The Virtual File System (FFS) is an interactive console-based file system that operates entirely in dynamic/heap memory. Users can interact with the FFS through console commands (similar to a Windows-style command prompt) to manage files and directories. This system simulates a file system without modifying the real file system on disk. All changes made are limited to the in-memory representation of the file system.  
 
+A Visual Studio 2022 starting project is provided with basic code to enumerate the real file system and extract information, but all commands will operate solely on the fake file system.  
 
-Initialisation complete...
-\ :> dir
-12/09/2023  09:42	  <DIR>		DirectoryName1
-12/04/2023  13:43		12,432	MyFile.tmp
-08/10/2022  15:32	  <DIR>		DirectoryName2
-	1 File(s)		12,432 total bytes
-	2 Dir(s)
-\ :> cd DirectoryName1
-\DirectoryName1 :> dir
-	...
+## Key Features  
+- **In-Memory Representation**: Files and directories exist only in memory and do not affect the actual file system.  
+- **Dynamic Commands**: Interact with the file system using standard commands such as `dir`, `cd`, `mkdir`, and `mkfile`.  
+- **Sorting**: Sort files and directories in the current folder by name or size, with the new order persisting across operations.  
 
+## Commands  
 
-The command prompt shows the current directory and path, starting with “\” for the root directory.  In C++, the backslash character needs to be coded up using the escape-sequence “\\”.  This is similar to a tab, which is “\t”, and newline, which is “\n”.
-The list of commands are:
-dir	list the files and directories in the current directoy, and in the order they are currently held in your data structure
+### `dir`  
+Lists the files and directories in the current directory in the current internal order.  
 
-sortsize 	sorts the current directory by increasing size with all directories at the top of the list.  This order must persistent by updating the internal order of your 
-collections so when dir is called again, this order is shown until a new sort is performed
+### `sortsize`  
+Sorts the current directory by increasing size, with directories listed at the top. Updates the internal order, so subsequent `dir` commands reflect this change.  
 
-sortname	sorts the current directory lexographically.  This order must persistent by updating the internal order of your collections so when dir is called again, this 
-order is shown until a new sort is performed
+### `sortname`  
+Sorts the current directory lexicographically. Updates the internal order, so subsequent `dir` commands reflect this change.  
 
-cd name	changes into that directory, if it exists.  If name is “..”, move back up to the current directory’s parent
+### `cd name`  
+- Changes into the specified directory, if it exists.  
+- Use `cd ..` to move back to the parent directory.  
 
-mkdir name	makes a new directory called name – add to the end of current list
+### `mkdir name`  
+Creates a new directory named `name` and adds it to the end of the current list.  
 
-mkfile name	makes a new file called name – add to the end of the current list and set the size to a random value
+### `mkfile name`  
+Creates a new file named `name` with a random size and adds it to the end of the current list.  
 
-del name	removes the file or directory called name
+### `del name`  
+Removes the file or directory named `name` from the current directory.  
 
-exit	exits your application
+### `exit`  
+Exits the application.  
+
+---
+
+## Example Console Interaction  
+
+```plaintext
+Initialisation complete...  
+\ :> dir  
+12/09/2023  09:42    <DIR>     DirectoryName1  
+12/04/2023  13:43     12,432   MyFile.tmp  
+08/10/2022  15:32    <DIR>     DirectoryName2  
+    1 File(s)        12,432 total bytes  
+    2 Dir(s)  
+
+\ :> cd DirectoryName1  
+\DirectoryName1 :> dir  
+...  
